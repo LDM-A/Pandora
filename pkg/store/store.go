@@ -21,6 +21,11 @@ func (kv *KVStorage) Put(key string, value []byte) error {
 	return nil
 }
 
+/*
+	When Auditor implementation comes will use Actors to send messages
+	between auditors to agree on Delete/Update actions and rebalance merkle trees
+*/
+
 func (kv *KVStorage) Delete(key string) ([]byte, error) {
 	return nil, nil
 }
