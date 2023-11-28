@@ -1,22 +1,28 @@
 package merkle
 
 type MerkleTree struct {
-	Root *MerkleNode
+	Root       *MerkleNode
+	Nodes      []*MerkleNode
+	MerkleRoot []byte
 }
 
 type MerkleNode struct {
+	Tree  *MerkleTree
 	Left  *MerkleNode
 	Right *MerkleNode
 	Data  []byte
+	Hash  []byte
 }
 
 func NewMerkleNode(left, right *MerkleNode, data []byte) *MerkleNode {
 	return nil
 }
 
-func NewMerkleTree(data [][]byte) *MerkleTree {
-	var nodes []MerkleNode
+func NewMerkleTree() *MerkleTree {
+	return nil
+}
 
-	root := &MerkleTree{&nodes[0]}
-	return root
+func NewMerkleTreeWithData(data [][]byte) *MerkleTree {
+
+	return nil
 }
