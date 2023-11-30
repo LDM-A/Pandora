@@ -13,9 +13,20 @@ type Storage interface {
 	Update(string, []byte) error
 }
 
+type VerifiedStorage interface {
+	VerifiedGet(string) ([]byte, error)
+	VerifiedPut(string, []byte) error
+	VerifiedDelete(string) ([]byte, error)
+	VerifiedUpdate(string, []byte) error
+}
+
 func (kv *KVStorage) Get(key string) ([]byte, error) {
 	return nil, nil
 }
+
+// VerifiedGet returns the value associated with the proof, and the data needed for an auditor to confirm its validity
+// Returns an error if proofing the Get failed server side. (If the server sends an OK this does not mean it has not been tampered with)
+func (kv *KVStorage) VerifiedGet(key string) ([]byte, error)
 
 func (kv *KVStorage) Put(key string, value []byte) error {
 	return nil
