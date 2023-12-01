@@ -49,7 +49,8 @@ func (kv *KVStorage) Has(key string) bool {
 	return ok
 }
 func (kv *KVStorage) Get(key string) ([]byte, error) {
-
+	kv.mu.RLock()
+	defer kv.mu.RUnlock()
 	value, ok := kv.data[key]
 	if !ok {
 		return nil, errors.New("Value not found")
@@ -59,9 +60,12 @@ func (kv *KVStorage) Get(key string) ([]byte, error) {
 
 func (kv *KVStorage) Put(key string, value []byte) error {
 	if ok := kv.Has(key); !ok {
+		kv.mu.Lock()
 		if err := kv.merkleTree.Add(key, value); err != nil {
 			return errors.New("Failed to hash data into Merkle tree. Do not store the data")
 		}
+
+		defer kv.mu.Unlock()
 		kv.data[key] = value
 		return nil
 	}
