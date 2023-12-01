@@ -2,55 +2,84 @@ package merkle
 
 import (
 	"crypto/sha256"
-	"hash"
+	"errors"
 )
 
-type MerkleTreeData interface {
-	Add()
-	Delete()
-	Balance()
-	Hash()
-}
-
 type MerkleTree struct {
-	Root         *MerkleNode
-	rootHash     []byte
-	Nodes        []*MerkleNode
-	MerkleRoot   []byte
-	hashStrategy func() hash.Hash
+	Root *MerkleNode
 }
 
 type MerkleNode struct {
-	Tree  *MerkleTree
-	Paren *MerkleNode
 	Left  *MerkleNode
 	Right *MerkleNode
-	leaf  bool
-	dup   bool
-	Data  []byte // Will see if we store data in merkle tree or in underlying datastore
-	// such as the key-value store, later more complicated structures using binary trees or avl trees
-	Hash []byte
+	Data  []byte
 }
 
-func (mt *MerkleTree) Add(key string, value []byte) error {
-	// Add the value to the merkle tree if successfull allow KV storage,
-	// if it fails it rejects the transaction
-	return nil
-}
+func NewMerkleNode(left *MerkleNode, right *MerkleNode, data []byte) *MerkleNode {
+	node := MerkleNode{}
 
-func NewMerkleNode(left, right *MerkleNode, data []byte) *MerkleNode {
-	return nil
-}
-
-func NewMerkleTree() *MerkleTree {
-	tree := &MerkleTree{
-		hashStrategy: sha256.New,
+	if left == nil && right == nil {
+		hash := sha256.Sum256(data)
+		node.Data = hash[:]
+	} else {
+		prevHashes := append(left.Data, right.Data...)
+		hash := sha256.Sum256(prevHashes)
+		node.Data = hash[:]
 	}
 
-	return tree
+	node.Left = left
+	node.Right = right
+
+	return &node
 }
 
-func NewMerkleTreeWithData(data [][]byte) *MerkleTree {
+func NewMerkleTree(data [][]byte) *MerkleTree {
+	var nodes []MerkleNode
 
-	return nil
+	if len(data)%2 != 0 {
+		data = append(data, data[len(data)-1])
+	}
+
+	for _, datum := range data {
+		node := NewMerkleNode(nil, nil, datum)
+		nodes = append(nodes, *node)
+	}
+
+	for i := 0; i < len(data)/2; i++ {
+		var newLevel []MerkleNode
+
+		for j := 0; j < len(nodes); j += 2 {
+			node := NewMerkleNode(&nodes[j], &nodes[j+1], nil)
+			newLevel = append(newLevel, *node)
+		}
+
+		nodes = newLevel
+	}
+
+	return &MerkleTree{&nodes[0]}
+}
+
+func (mt *MerkleTree) addToTree(root, newNode *MerkleNode) (*MerkleNode, error) {
+	if root == nil {
+		return nil, errors.New("")
+	}
+
+	if root.Left == nil {
+		return NewMerkleNode(newNode, root, nil), nil
+	}
+
+	if root.Right == nil {
+		return NewMerkleNode(root, newNode, nil), nil
+	}
+
+	//leftHash := root.Left.Data
+	//rightHash := root.Right.Data
+	//prevHashes := append(leftHash, rightHash...)
+
+	//hash := sha256.Sum256(prevHashes)
+	//root.Data = hash[]
+
+	//root.Left = mt.addToTree(root.Left, newNode)
+
+	return NewMerkleNode(root.Left, root.Right, root.Data), nil
 }
