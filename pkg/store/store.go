@@ -9,6 +9,7 @@ import (
 
 type Storage interface {
 	Get(string) ([]byte, error)
+	Has(string) bool
 	Put(string, []byte) error
 	Delete(string) ([]byte, error)
 	Update(string, []byte) error
@@ -40,21 +41,27 @@ func (kv *KVStorage) VerifiedUpdate(key string) ([]byte, error) {
 }
 
 /*
-	When Auditor implementation comes will use Actors to send messages
-	between auditors to agree on Delete/Update actions and rebalance merkle trees
+When Auditor implementation comes will use Actors to send messages
+between auditors to agree on Delete/Update actions and rebalance merkle trees
 */
-
+func (kv *KVStorage) Has(key string) bool {
+	_, ok := kv.data[key]
+	return ok
+}
 func (kv *KVStorage) Get(key string) ([]byte, error) {
 
-	value := kv.data[key]
-	if value != nil {
+	value, ok := kv.data[key]
+	if !ok {
 		return nil, errors.New("Value not found")
 	}
 	return value, nil
 }
 
 func (kv *KVStorage) Put(key string, value []byte) error {
-	if _, found := kv.Get(key); found != nil {
+	if ok := kv.Has(key); !ok {
+		if err := kv.merkleTree.Add(key, value); err != nil {
+			return errors.New("Failed to hash data into Merkle tree. Do not store the data")
+		}
 		kv.data[key] = value
 		return nil
 	}

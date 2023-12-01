@@ -5,6 +5,13 @@ import (
 	"hash"
 )
 
+type MerkleTreeData interface {
+	Add()
+	Delete()
+	Balance()
+	Hash()
+}
+
 type MerkleTree struct {
 	Root         *MerkleNode
 	rootHash     []byte
@@ -23,6 +30,12 @@ type MerkleNode struct {
 	Data  []byte // Will see if we store data in merkle tree or in underlying datastore
 	// such as the key-value store, later more complicated structures using binary trees or avl trees
 	Hash []byte
+}
+
+func (mt *MerkleTree) Add(key string, value []byte) error {
+	// Add the value to the merkle tree if successfull allow KV storage,
+	// if it fails it rejects the transaction
+	return nil
 }
 
 func NewMerkleNode(left, right *MerkleNode, data []byte) *MerkleNode {
