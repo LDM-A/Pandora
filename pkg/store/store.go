@@ -11,14 +11,12 @@ type Storage interface {
 	Has(string) bool
 	Put(string, []byte) error
 	Delete(string) ([]byte, error)
-	Update(string, []byte) error
 }
 
 type VerifiedStorage interface {
 	VerifiedGet(string) ([]byte, error)
 	VerifiedPut(string, []byte) error
 	VerifiedDelete(string) ([]byte, error)
-	VerifiedUpdate(string, []byte) error
 }
 
 // VerifiedGet returns the value associated with the proof, and the data needed for an auditor to confirm its validity
@@ -32,10 +30,6 @@ func (kv *KVStorage) VerifiedPut(key string) ([]byte, error) {
 }
 
 func (kv *KVStorage) VerifiedDelete(key string) ([]byte, error) {
-	return nil, nil
-}
-
-func (kv *KVStorage) VerifiedUpdate(key string) ([]byte, error) {
 	return nil, nil
 }
 
@@ -75,15 +69,10 @@ func (kv *KVStorage) Delete(key string) ([]byte, error) {
 	return nil, nil
 }
 
-func (kv *KVStorage) Update(key string, value []byte) error {
-	return nil
-}
-
 /*
-	For now before moving to a more complex structure like an AVL tree
-	will be using a KV store backed by the merkle tree for verification.
+For now before moving to a more complex structure like an AVL tree
+will be using a KV store backed by the merkle tree for verification.
 */
-
 type KVStorage struct {
 	mu   sync.RWMutex
 	data map[string][]byte
