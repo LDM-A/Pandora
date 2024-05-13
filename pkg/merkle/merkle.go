@@ -55,8 +55,8 @@ func NewMerkleTree(data [][]byte) *MerkleTree {
 
 		nodes = newLevel
 	}
-
-	return &MerkleTree{&nodes[0]}
+	t := MerkleTree{&nodes[0]}
+	return &t
 }
 
 func (mt *MerkleTree) addToTree(root, newNode *MerkleNode) (*MerkleNode, error) {

@@ -3,8 +3,7 @@ package store
 import (
 	"errors"
 	"sync"
-
-	"github.com/LDM-A/pandoratree/pkg/merkle"
+	//"github.com/LDM-A/pandoratree/pkg/merkle"
 )
 
 type Storage interface {
@@ -53,7 +52,7 @@ func (kv *KVStorage) Get(key string) ([]byte, error) {
 	defer kv.mu.RUnlock()
 	value, ok := kv.data[key]
 	if !ok {
-		return nil, errors.New("Value not found")
+		return nil, errors.New("value not found")
 	}
 	return value, nil
 }
@@ -61,15 +60,15 @@ func (kv *KVStorage) Get(key string) ([]byte, error) {
 func (kv *KVStorage) Put(key string, value []byte) error {
 	if ok := kv.Has(key); !ok {
 		kv.mu.Lock()
-		if err := kv.merkleTree.Add(key, value); err != nil {
-			return errors.New("Failed to hash data into Merkle tree. Do not store the data")
-		}
+		//if err := kv.merkleTree.Add(key, value); err != nil {
+		//	return errors.New("Failed to hash data into Merkle tree. Do not store the data")
+		//}
 
 		defer kv.mu.Unlock()
 		kv.data[key] = value
 		return nil
 	}
-	return errors.New("Value already exists.")
+	return errors.New("value already exists")
 }
 
 func (kv *KVStorage) Delete(key string) ([]byte, error) {
@@ -86,15 +85,15 @@ func (kv *KVStorage) Update(key string, value []byte) error {
 */
 
 type KVStorage struct {
-	mu         sync.RWMutex
-	data       map[string][]byte
-	merkleTree *merkle.MerkleTree
+	mu   sync.RWMutex
+	data map[string][]byte
+	//merkleTree *merkle.MerkleTree
 }
 
 func NewKVStorage() *KVStorage {
 	return &KVStorage{
-		data:       make(map[string][]byte),
-		merkleTree: merkle.NewMerkleTree(),
-		mu:         sync.RWMutex{},
+		data: make(map[string][]byte),
+		//merkleTree: merkle.NewMerkleTree(),
+		mu: sync.RWMutex{},
 	}
 }

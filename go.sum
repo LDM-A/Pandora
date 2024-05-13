@@ -1,0 +1,4 @@
+github.com/txaty/go-merkletree v0.2.2 h1:K5bHDFK+Q3KK+gEJeyTOECKuIwl/LVo4CI+cm0/p34g=
+github.com/txaty/go-merkletree v0.2.2/go.mod h1:w5HPEu7ubNw5LzS+91m+1/GtuZcWHKiPU3vEGi+ThJM=
+golang.org/x/sync v0.7.0 h1:YsImfSBoP9QPYL0xyKJPq0gcaJdG3rInoqxTWbfQu9M=
+golang.org/x/sync v0.7.0/go.mod h1:Czt+wKu1gCyEFDUtn0jG5QVvpJ6rzVqr5aXyt9drQfk=
